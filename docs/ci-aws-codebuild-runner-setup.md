@@ -33,6 +33,7 @@ Reference:
 - `instance_size` is passed as a runner label override.
 - The workflow still uses the repository regression script:
   - `tests/run_regression.sh --allow-missing-required-roms --quartus-compile`
+- Current workflow uses shell-based checkout/collection to avoid Node/glibc compatibility issues on older Quartus container images.
 
 ## Validation Checklist
 - `quartus_sh --version` succeeds in job logs.

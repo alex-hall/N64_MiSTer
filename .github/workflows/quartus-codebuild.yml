@@ -35,8 +35,14 @@ jobs:
       - ${{ format('instance-size:{0}', inputs.instance_size) }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout (shell)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git init .
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth 1 origin "${GITHUB_SHA}"
+          git checkout --detach "${GITHUB_SHA}"
 
       - name: Verify Quartus CLI
         run: |
@@ -49,15 +55,8 @@ jobs:
       - name: Run Quartus regression compile
         run: tests/run_regression.sh --allow-missing-required-roms --quartus-compile
 
-      - name: Upload Quartus reports
+      - name: Collect Quartus report paths
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: quartus-codebuild-output-files
-          if-no-files-found: warn
-          path: |
-            output_files/*.rpt
-            output_files/*.summary
-            output_files/*.sof
-            output_files/*.pof
-            output_files/*.jic
+        run: |
+          echo "Build output files:"
+          ls -1 output_files/*.rpt output_files/*.summary output_files/*.sof output_files/*.pof output_files/*.jic 2>/dev/null || true

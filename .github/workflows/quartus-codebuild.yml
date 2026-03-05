@@ -31,8 +31,8 @@ jobs:
     name: Quartus compile on CodeBuild runner
     timeout-minutes: 240
     runs-on:
-      - ${{ format('codebuild-{0}-{1}-{2}', inputs.codebuild_project, github.run_id, github.run_attempt) }}
-      - ${{ format('instance-size:{0}', inputs.instance_size) }}
+      - ${{ format('codebuild-{0}-{1}-{2}', github.event_name == 'workflow_dispatch' && inputs.codebuild_project || 'MiSTer_Github_Action', github.run_id, github.run_attempt) }}
+      - ${{ format('instance-size:{0}', github.event_name == 'workflow_dispatch' && inputs.instance_size || 'large') }}
 
     steps:
       - name: Checkout (shell)
